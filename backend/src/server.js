@@ -2,11 +2,12 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import { connectDB } from "./lib/db.js";
 
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 
-dotenv.config();
+dotenv.config({ path: "./src/.env" });
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,11 +16,15 @@ const PORT = process.env.PORT || 4000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.json());
+//connect to database
+connectDB();
+app.use(express.json()); //middleware to parse JSON bodies means after using this, req.body will have the parsed JSON or data sent by client
 
 //APIroutes mounting
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+
+console.log("MONGO_URL =", process.env.MONGO_URL);
 
 //frontend path
 const frontendPath = path.join(__dirname, "../../frontend/dist");
