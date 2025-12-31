@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./lib/db.js";
-
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 
@@ -24,11 +23,8 @@ app.use(express.json()); //middleware to parse JSON bodies means after using thi
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-console.log("MONGO_URL =", process.env.MONGO_URL);
-
 //frontend path
 const frontendPath = path.join(__dirname, "../../frontend/dist");
-console.log("Serving frontend from:", frontendPath);
 
 //Always serve frontend
 app.use(express.static(frontendPath));
