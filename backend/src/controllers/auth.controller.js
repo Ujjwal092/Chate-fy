@@ -4,6 +4,7 @@ import { generateToken } from "../lib/utils/utils.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import dotenv from "dotenv";
 dotenv.config();
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -27,7 +28,7 @@ export const signup = async (req, res) => {
       });
     }
 
-    //check if user already exists
+    //check if user already exists user is used to store the result
     const user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ message: "Email already exists" });
@@ -56,7 +57,7 @@ export const signup = async (req, res) => {
       try {
         await sendWelcomeEmail(
           savedUser.email,
-          savedUser.fullName,
+          savedUser.fullName, //??
           process.env.CLIENT_URL
         );
       } catch (err) {
@@ -88,7 +89,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    //compare password
+    //compare password here password is plain text password from req and user.password is hashed password from db previously stored
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -113,6 +114,33 @@ export const logout = async (req, res) => {
     res.clearCookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
+    res.status(500).json({ message: "server error" });
+  }
+};
+
+//update profile controller
+export const updateProfile = async (req, res) => {
+  try {
+    const { profilePic } = req.body;
+    if (!profilePic) {
+      return res.status(400).json({ message: "Profile picture is required" });
+    }
+    //in protectedRoute middleware we call the next() function after verifying the token and req.user is set to the authenticated user
+    const userId = req.user._id; //authenticated user's id
+    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: uploadResponse.secure_url },
+      { new: true }
+    );
+    res.status(200).json({
+      _id: updatedUser._id,
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      profilePic: updatedUser.profilePic,
+    });
+  } catch (error) {
+    console.log("Error updating profile picture", error);
     res.status(500).json({ message: "server error" });
   }
 };

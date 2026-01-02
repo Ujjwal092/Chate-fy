@@ -5,10 +5,12 @@ import { fileURLToPath } from "url";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config({ path: "./src/.env" });
 
 const app = express();
+app.set("trust proxy", true);
 const PORT = process.env.PORT || 4000;
 
 //  __dirname for ES modules
@@ -18,6 +20,7 @@ const __dirname = path.dirname(__filename);
 //connect to database
 connectDB();
 app.use(express.json()); //middleware to parse JSON bodies means after using this, req.body will have the parsed JSON or data sent by client
+app.use(cookieParser()); //middleware to parse cookies
 
 //APIroutes mounting
 app.use("/api/auth", authRoutes);
