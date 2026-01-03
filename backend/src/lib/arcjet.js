@@ -10,7 +10,7 @@ const aj = arcjet({
 
     // Create a bot detection rule
     detectBot({
-      mode: "LIVE", // Blocks requests. Use "DRY_RUN" to log only
+      mode: "DRY_RUN", // Blocks requests. Use "DRY_RUN" to log only
       // Block all bots except the following
 
       allow: [
@@ -24,7 +24,7 @@ const aj = arcjet({
 
     // Create a sliding window  rate limiting algorithm . Other algorithms are supported.
     slidingWindow({
-      mode: "LIVE", // Enforce rate limits. Use "DRY_RUN" to log only
+      mode: "DRY_RUN", // Enforce rate limits. Use "DRY_RUN" to log only
       max: 100, // Max 100 requests
       interval: 60, // Per 60 seconds
     }),

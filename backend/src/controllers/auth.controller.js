@@ -84,6 +84,7 @@ export const login = async (req, res) => {
       });
     }
     //check if user exists
+    //User.findOne is mongoose method to find one document in the collection that matches the query
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -125,14 +126,17 @@ export const updateProfile = async (req, res) => {
     if (!profilePic) {
       return res.status(400).json({ message: "Profile picture is required" });
     }
+
     //in protectedRoute middleware we call the next() function after verifying the token and req.user is set to the authenticated user
     const userId = req.user._id; //authenticated user's id
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { profilePic: uploadResponse.secure_url },
       { new: true }
     );
+
     res.status(200).json({
       _id: updatedUser._id,
       fullName: updatedUser.fullName,

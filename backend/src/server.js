@@ -10,7 +10,7 @@ import cookieParser from "cookie-parser";
 dotenv.config({ path: "./src/.env" });
 
 const app = express();
-app.set("trust proxy", true);
+app.set("trust proxy", true); //trust first proxy, needed for secure cookies if behind a proxy like nginx
 const PORT = process.env.PORT || 4000;
 
 //  __dirname for ES modules
