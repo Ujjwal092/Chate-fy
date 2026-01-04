@@ -1,12 +1,46 @@
 import { create } from "zustand";
+import { axiosInstance } from "../lib/axios";
+import { toast } from "react-hot-toast";
 
-export const useAuthStore = create((set, get) => ({
-  authUser: { name: "john", _id: "123", age: 30 },
-  isLoggedIn: false,
-  isLoading: false,
+export const useAuthStore = create((set) => ({
+  authUser: null,
+  isCheckingAuth: true,
+  isSigningUp: false,
+  isLoggingIn: false,
 
-  login: () => {
-    console.log("logged in");
-    set({ isLoggedIn: true, isLoading: true }); // Update the isLoggedIn state to true and we can update this mutliple states
+  checkAuth: async () => {
+    try {
+      const res = await axiosInstance.get("auth/check"); //if authenticated, returns user data
+      set({ authUser: res.data }); // Set authenticated user data
+    } catch (error) {
+      set({ authUser: null });
+    } finally {
+      set({ isCheckingAuth: false });
+    }
+  },
+  signup: async (data) => {
+    set({ isSigningUp: true });
+    try {
+      const res = await axiosInstance.post("/auth/signup", data);
+      set({ authUser: res.data }); // Set authenticated user data after signup
+
+      toast.success("Account created successfully!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Signup failed");
+    } finally {
+      set({ isSigningUp: false });
+    }
+  },
+  login: async (data) => {
+    set({ isLoggingIn: true });
+    try {
+      const res = await axiosInstance.post("/auth/login", data);
+      set({ authUser: res.data }); // Set authenticated user data after login
+      toast.success("Logged in successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Login failed");
+    } finally {
+      set({ isSigningUp: false });
+    }
   },
 }));

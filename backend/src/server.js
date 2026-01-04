@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import path from "path";
+import cors from "cors";
 import { fileURLToPath } from "url";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
@@ -20,6 +21,14 @@ const __dirname = path.dirname(__filename);
 //connect to database
 connectDB();
 app.use(express.json()); //middleware to parse JSON bodies means after using this, req.body will have the parsed JSON or data sent by client
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true, //allow cookies to be sent
+  })
+);
+
 app.use(cookieParser()); //middleware to parse cookies
 
 //APIroutes mounting
