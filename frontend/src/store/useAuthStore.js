@@ -43,4 +43,13 @@ export const useAuthStore = create((set) => ({
       set({ isSigningUp: false });
     }
   },
+  logout: async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+      set({ authUser: null }); // Clear authenticated user data on logout and also cookies are cleared from server side
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Logout failed");
+    }
+  },
 }));
