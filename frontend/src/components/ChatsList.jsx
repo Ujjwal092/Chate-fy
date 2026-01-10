@@ -9,13 +9,15 @@ function ChatsList() {
     useChatStore();
   const { onlineUsers } = useAuthStore();
 
+  //fetch chat partners on component mount
   useEffect(() => {
     getMyChatPartners();
   }, [getMyChatPartners]);
 
   if (isUsersLoading) return <UsersLoadingSkeleton />;
+  //skeleton while loading
   if (chats.length === 0) return <NoChatsFound />;
-
+  //if no chats found
   return (
     <>
       {chats.map((chat) => (

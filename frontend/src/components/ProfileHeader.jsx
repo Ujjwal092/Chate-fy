@@ -1,3 +1,4 @@
+//top div contain profile pic, name, online status, logout button, sound toggle button
 import { useState, useRef } from "react";
 import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
@@ -13,16 +14,16 @@ function ProfileHeader() {
   const fileInputRef = useRef(null);
 
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; //get the selected file
     if (!file) return;
 
-    const reader = new FileReader();
+    const reader = new FileReader(); //js api to read file contents
     reader.readAsDataURL(file);
 
     reader.onloadend = async () => {
       const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
+      setSelectedImg(base64Image); //set the preview immediately
+      await updateProfile({ profilePic: base64Image }); //update profile pic on server
     };
   };
 
@@ -46,10 +47,11 @@ function ProfileHeader() {
               </div>
             </button>
 
+            {/* HIDDEN FILE INPUT  */}
             <input
               type="file"
-              accept="image/*"
-              ref={fileInputRef}
+              accept="image/*" //only image files
+              ref={fileInputRef} //reference to trigger click
               onChange={handleImageUpload}
               className="hidden"
             />

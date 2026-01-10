@@ -36,7 +36,7 @@ function LoginPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Handle form submission
+  // Handle form submission of form login page
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent default form submission
     login(formData); // Call login function from auth store
@@ -77,7 +77,7 @@ function LoginPage() {
                         type="email"
                         required
                         className="input"
-                        placeholder="johndoe@gmail.com"
+                        placeholder="Enter your email"
                         value={formData.email}
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
@@ -96,11 +96,11 @@ function LoginPage() {
                         required
                         className="input pr-12"
                         placeholder="Enter your password"
-                        value={formData.password}
+                        value={formData.password} //bind value to state
                         onChange={(e) =>
                           setFormData({
-                            ...formData,
-                            password: e.target.value,
+                            ...formData, //spread previous form data
+                            password: e.target.value, //update password only
                           })
                         }
                         onKeyUp={(e) =>
@@ -124,7 +124,7 @@ function LoginPage() {
                   {/* SUBMIT */}
                   <button
                     type="submit"
-                    disabled={isLoggingIn}
+                    disabled={isLoggingIn} // state is disabled during login
                     className={`animated-button mx-auto mt-2 ${
                       isLoggingIn ? "opacity-70 cursor-not-allowed" : ""
                     }`}
@@ -132,6 +132,7 @@ function LoginPage() {
                     <span className="circle" />
                     <span className="text">
                       {isLoggingIn ? "Logging in..." : "Sign In"}
+                      {/*isLoggingIn is true then Logging in text is shown */}
                     </span>
                     <svg className="arr-1" viewBox="0 0 24 24">
                       <path d="M5 12h14M13 5l6 7-6 7" />

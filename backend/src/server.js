@@ -12,7 +12,7 @@ dotenv.config({ path: "./src/.env" });
 
 const app = express();
 app.set("trust proxy", true); //trust first proxy, needed for secure cookies if behind a proxy like nginx
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 //  __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -22,10 +22,15 @@ const __dirname = path.dirname(__filename);
 connectDB();
 app.use(express.json()); //middleware to parse JSON bodies means after using this, req.body will have the parsed JSON or data sent by client
 
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ limit: "20mb", extended: true }));
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true, //allow cookies to be sent
+    origin: "http://localhost:5173", // hardcode for dev (BEST)
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
