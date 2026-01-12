@@ -2,14 +2,11 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import dotenv from "dotenv";
 
-dotenv.config({ path: "./src/.env" });
+dotenv.config();
 
 export const socketAuthMiddleware = async (socket, next) => {
   try {
-    /* ================================
-       1️⃣ EXTRACT JWT FROM COOKIE
-       ================================ */
-
+    // EXTRACT JWT FROM COOKIE
     const cookieHeader = socket.handshake.headers.cookie;
 
     if (!cookieHeader) {
@@ -28,9 +25,7 @@ export const socketAuthMiddleware = async (socket, next) => {
       return next(new Error("Unauthorized - No Token"));
     }
 
-    /* ================================
-       2️⃣ VERIFY JWT
-       ================================ */
+    // VERIFY JWT
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -43,9 +38,7 @@ export const socketAuthMiddleware = async (socket, next) => {
       return next(new Error("Unauthorized - Invalid Token"));
     }
 
-    /* ================================
-       3️⃣ FETCH USER FROM DATABASE
-       ================================ */
+    //FETCH USER FROM DATABASE
 
     const user = await User.findById(userId).select("-password");
 
@@ -54,9 +47,7 @@ export const socketAuthMiddleware = async (socket, next) => {
       return next(new Error("Unauthorized - User Not Found"));
     }
 
-    /* ================================
-       4️⃣ ATTACH USER TO SOCKET
-       ================================ */
+    // ATTACH USER TO SOCKET OBJECT
 
     socket.user = user; // full user object
     socket.userId = user._id.toString(); // normalized userId

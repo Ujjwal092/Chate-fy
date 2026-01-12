@@ -10,18 +10,19 @@ import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import { initSocket } from "./lib/socket.js";
 
-dotenv.config({ path: "./src/.env" });
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔥 CORS — NOW APPLIED TO REAL APP
+// cors
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || true,
     credentials: true,
   })
 );
+
 app.options("*", cors());
 
 // body + cookies
@@ -43,7 +44,7 @@ const frontendPath = path.join(__dirname, "../../frontend/dist");
 app.use(express.static(frontendPath));
 app.get("*", (req, res) => res.sendFile(path.join(frontendPath, "index.html")));
 
-// 🔥 SOCKET + SERVER START (SINGLE SOURCE)
+// SOCKET + SERVER START (SINGLE SOURCE)
 const server = initSocket(app);
 
 server.listen(PORT, () => {
