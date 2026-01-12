@@ -9,8 +9,7 @@ function MessageInput() {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
 
-  const fileInputRef = useRef(null);
-
+  const fileInputRef = useRef(null); // Ref for the hidden file input
   const { sendMessage, isSoundEnabled } = useChatStore();
 
   const handleSendMessage = (e) => {
@@ -22,8 +21,9 @@ function MessageInput() {
       text: text.trim(),
       image: imagePreview,
     });
-    setText("");
-    setImagePreview("");
+
+    setText(""); // Clear text input field after sending
+    setImagePreview(""); // Clear image preview after sending
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -39,6 +39,7 @@ function MessageInput() {
     reader.readAsDataURL(file);
   };
 
+  // Function to remove selected image
   const removeImage = () => {
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -54,6 +55,7 @@ function MessageInput() {
               alt="Preview"
               className="w-20 h-20 object-cover rounded-lg border border-slate-700"
             />
+            {/* Button to remove the selected image */}
             <button
               onClick={removeImage}
               className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-slate-200 hover:bg-slate-700"
@@ -69,6 +71,7 @@ function MessageInput() {
         onSubmit={handleSendMessage}
         className="max-w-3xl mx-auto flex space-x-4"
       >
+        {/* Text Input Field */}
         <input
           type="text"
           value={text}
@@ -80,6 +83,7 @@ function MessageInput() {
           placeholder="Type your message..."
         />
 
+        {/* Hidden File Input for Image Upload */}
         <input
           type="file"
           accept="image/*"
@@ -87,7 +91,7 @@ function MessageInput() {
           onChange={handleImageChange}
           className="hidden"
         />
-
+        {/* Image Upload Button */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
@@ -97,6 +101,8 @@ function MessageInput() {
         >
           <ImageIcon className="w-5 h-5" />
         </button>
+
+        {/* Send Button */}
         <button
           type="submit"
           disabled={!text.trim() && !imagePreview}

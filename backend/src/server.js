@@ -2,56 +2,59 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
+
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
-import cookieParser from "cookie-parser";
 
+// Load env
 dotenv.config({ path: "./src/.env" });
 
 const app = express();
-app.set("trust proxy", true); //trust first proxy, needed for secure cookies if behind a proxy like nginx
 const PORT = process.env.PORT || 3000;
 
-//  __dirname for ES modules
+// Trust proxy (needed for cookies if deployed)
+app.set("trust proxy", 1);
+
+// __dirname fix for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-//connect to database
+// DATABASE
 connectDB();
-app.use(express.json()); //middleware to parse JSON bodies means after using this, req.body will have the parsed JSON or data sent by client
 
-app.use(express.json({ limit: "20mb" }));
-app.use(express.urlencoded({ limit: "20mb", extended: true }));
+// MIDDLEWARE SETUP
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // hardcode for dev (BEST)
+    origin: "http://localhost:5173", // frontend
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-app.use(cookieParser()); //middleware to parse cookies
+app.use(cookieParser());
 
-//APIroutes mounting
+// API ROUTES
+
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-//frontend path
+// FRONTEND SERVE (VITE BUILD)
 const frontendPath = path.join(__dirname, "../../frontend/dist");
 
-//Always serve frontend
 app.use(express.static(frontendPath));
 
-//fallback if no API routes are hit
 app.get("*", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// start server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });

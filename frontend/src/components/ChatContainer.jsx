@@ -58,18 +58,19 @@ function ChatContainer() {
       <div className="flex-1 px-6 py-8 overflow-y-auto">
         {isMessagesLoading ? (
           <MessagesLoadingSkeleton />
-        ) : messages.length > 0 ? (
+        ) : // {/* Loading state if we are in loading state else show message*/}
+        messages.length > 0 ? (
           <div className="max-w-3xl mx-auto space-y-6">
             {messages.map((msg) => (
               <div
                 key={msg._id}
                 className={`chat ${
-                  msg.senderId === authUser._id ? "chat-end" : "chat-start"
+                  msg.senderId === authUser._id ? "chat-end" : "chat-start" //msg sender is us or authUser if so align to right else left
                 }`}
               >
                 <div
                   className={`chat-bubble relative ${
-                    msg.senderId === authUser._id
+                    msg.senderId === authUser._id //msg sender is us or authUser
                       ? "bg-cyan-600 text-white"
                       : "bg-slate-800 text-slate-200"
                   }`}
@@ -84,6 +85,7 @@ function ChatContainer() {
 
                   {msg.text && <p>{msg.text}</p>}
 
+                  {/* Message timestamp */}
                   <p className="text-xs mt-1 opacity-75 flex items-center gap-1">
                     {new Date(msg.createdAt).toLocaleTimeString(undefined, {
                       hour: "2-digit",

@@ -11,7 +11,7 @@ function ProfileHeader() {
   const { isSoundEnabled, toggleSound } = useChatStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null); //to trigger file input click also used in MessageInput component
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0]; //get the selected file

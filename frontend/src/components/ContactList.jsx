@@ -11,7 +11,7 @@ function ContactList() {
     isUsersLoading,
   } = useChatStore();
 
-  const { onlineUsers = [] } = useAuthStore(); // ✅ DEFAULT ARRAY
+  const { onlineUsers = [] } = useAuthStore(); //  DEFAULT ARRAY
 
   useEffect(() => {
     getAllContacts();

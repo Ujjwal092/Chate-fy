@@ -33,7 +33,7 @@
   @apply px-4 py-2 inline-block bg-cyan-500/10 rounded-lg text-cyan-400
   hover:text-cyan-500 text-sm transition-colors;
 }
-/* From Uiverse.io by H_K_MENON */
+
 .animated-button {
   position: relative;
   display: flex;
@@ -120,101 +120,4 @@
   width: 220px;
   height: 220px;
   opacity: 1;
-}
-.input {
-  @apply pr-12;
-}
-/* ===== Chate-fy Floating Chat Bubbles ===== */
-
-:root[data-theme="dark"] {
-  --bubble-bg: rgba(34, 211, 238, 0.14);
-  --bubble-text: #67e8f9;
-  --bubble-glow: rgba(34, 211, 238, 0.35);
-}
-
-:root[data-theme="light"] {
-  --bubble-bg: rgba(59, 130, 246, 0.14);
-  --bubble-text: #2563eb;
-  --bubble-glow: rgba(59, 130, 246, 0.3);
-}
-
-.chat-float-wrap {
-  --mx: 0px;
-  --my: 0px;
-  pointer-events: none;
-}
-
-.chat-bubble {
-  position: absolute;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 999px;
-  color: var(--bubble-text);
-  background: var(--bubble-bg);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 18px var(--bubble-glow);
-  will-change: transform;
-  animation: floatY 9s ease-in-out infinite;
-}
-
-.b1 {
-  top: 22%;
-  left: 18%;
-  animation-delay: 0s;
-}
-.b2 {
-  top: 40%;
-  right: 16%;
-  animation-delay: 2s;
-  animation-duration: 10s;
-}
-.b3 {
-  bottom: 26%;
-  left: 24%;
-  animation-delay: 4s;
-  animation-duration: 11s;
-}
-.b4 {
-  bottom: 16%;
-  right: 22%;
-  animation-delay: 6s;
-  animation-duration: 12s;
-}
-
-@keyframes floatY {
-  0% {
-    transform: translate(var(--mx), var(--my)) translateY(0);
-    opacity: 0.85;
-  }
-  50% {
-    transform: translate(var(--mx), var(--my)) translateY(-18px) scale(1.05);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(var(--mx), var(--my)) translateY(0);
-    opacity: 0.85;
-  }
-}
-
-@media (max-width: 768px) {
-  .chat-bubble {
-    display: none;
-  }
-}
-@keyframes bgShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animated-bg {
-  background-size: 200% 200%;
-  animation: bgShift 18s ease infinite;
 }
