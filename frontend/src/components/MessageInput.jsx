@@ -23,7 +23,7 @@ function MessageInput() {
     });
 
     setText(""); // Clear text input field after sending
-    setImagePreview(""); // Clear image preview after sending
+    setImagePreview(null); // Clear image preview after sending
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 

@@ -1,46 +1,71 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import dotenv from "dotenv";
+
 dotenv.config({ path: "./src/.env" });
 
 export const socketAuthMiddleware = async (socket, next) => {
   try {
-    // extract token from http-only cookies
-    const token = socket.handshake.headers.cookie
-      ?.split("; ")
-      .find((row) => row.startsWith("jwt="))
+    /* ================================
+       1️⃣ EXTRACT JWT FROM COOKIE
+       ================================ */
+
+    const cookieHeader = socket.handshake.headers.cookie;
+
+    if (!cookieHeader) {
+      console.log("❌ Socket rejected: No cookies found");
+      return next(new Error("Unauthorized - No Cookies"));
+    }
+
+    // Find jwt token from cookies
+    const token = cookieHeader
+      .split("; ")
+      .find((cookie) => cookie.startsWith("jwt="))
       ?.split("=")[1];
 
     if (!token) {
-      console.log("Socket connection rejected: No token provided");
-      return next(new Error("Unauthorized - No Token Provided"));
+      console.log("❌ Socket rejected: JWT token missing");
+      return next(new Error("Unauthorized - No Token"));
     }
 
-    // verify the token
+    /* ================================
+       2️⃣ VERIFY JWT
+       ================================ */
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
-      console.log("Socket connection rejected: Invalid token");
+
+    // 🔥 SUPPORT BOTH PAYLOAD STYLES
+    // signup/login may use { id } or { userId }
+    const userId = decoded.userId || decoded.id;
+
+    if (!userId) {
+      console.log("❌ Socket rejected: Invalid JWT payload", decoded);
       return next(new Error("Unauthorized - Invalid Token"));
     }
 
-    // find the user fromdb
-    const user = await User.findById(decoded.userId).select("-password");
+    /* ================================
+       3️⃣ FETCH USER FROM DATABASE
+       ================================ */
+
+    const user = await User.findById(userId).select("-password");
+
     if (!user) {
-      console.log("Socket connection rejected: User not found");
-      return next(new Error("User not found"));
+      console.log("❌ Socket rejected: User not found in DB");
+      return next(new Error("Unauthorized - User Not Found"));
     }
 
-    // attach user info to socket
-    socket.user = user;
-    socket.userId = user._id.toString();
+    /* ================================
+       4️⃣ ATTACH USER TO SOCKET
+       ================================ */
 
-    console.log(
-      `Socket authenticated for user: ${user.fullName} (${user._id})`
-    );
+    socket.user = user; // full user object
+    socket.userId = user._id.toString(); // normalized userId
 
-    next();
+    console.log(`✅ Socket authenticated: ${user.fullName} (${socket.userId})`);
+
+    next(); // allow socket connection
   } catch (error) {
-    console.log("Error in socket authentication:", error.message);
-    next(new Error("Unauthorized - Authentication failed"));
+    console.log("❌ Socket auth error:", error.message);
+    next(new Error("Unauthorized - Socket Authentication Failed"));
   }
 };

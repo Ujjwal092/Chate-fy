@@ -13,7 +13,7 @@ export const generateToken = (userId, res) => {
     httpOnly: true, //prevent Cross site scripting attacks or XSS attacks
     secure: process.env.NODE_ENV === "development" ? false : true, //HTTPS
     maxAge: 7 * 24 * 60 * 60 * 1000, //millisecond (7 days)
-    sameSite: "strict", //CSRF attacks
+    sameSite: "lax", //CSRF attacks
   });
   return token;
 };

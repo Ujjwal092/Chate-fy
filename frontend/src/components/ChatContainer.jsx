@@ -19,29 +19,40 @@ function ChatContainer() {
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
 
-  // Fetch messages when user changes
+  /* ==============================
+     📥 FETCH + SUBSCRIBE MESSAGES
+     ============================== */
   useEffect(() => {
-    if (!selectedUser?._id) return;
+    if (!selectedUser?._id || !authUser?._id) return;
 
+    // fetch chat history
     getMessagesByUserId(selectedUser._id);
+
+    // subscribe to realtime messages
     subscribeToMessages();
 
+    // cleanup on user change / unmount
     return () => {
       unsubscribeFromMessages();
     };
   }, [
     selectedUser?._id,
+    authUser?._id,
     getMessagesByUserId,
     subscribeToMessages,
     unsubscribeFromMessages,
   ]);
 
-  // Auto scroll to latest message
+  /* ==============================
+     🔽 AUTO SCROLL TO LAST MESSAGE
+     ============================== */
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // If no user selected
+  /* ==============================
+     ❌ NO CHAT SELECTED
+     ============================== */
   if (!selectedUser) {
     return (
       <>
@@ -58,45 +69,48 @@ function ChatContainer() {
       <div className="flex-1 px-6 py-8 overflow-y-auto">
         {isMessagesLoading ? (
           <MessagesLoadingSkeleton />
-        ) : // {/* Loading state if we are in loading state else show message*/}
-        messages.length > 0 ? (
+        ) : messages.length > 0 ? (
           <div className="max-w-3xl mx-auto space-y-6">
-            {messages.map((msg) => (
-              <div
-                key={msg._id}
-                className={`chat ${
-                  msg.senderId === authUser._id ? "chat-end" : "chat-start" //msg sender is us or authUser if so align to right else left
-                }`}
-              >
+            {messages.map((msg) => {
+              // 🔥 CRITICAL: compare with authUser (not selectedUser)
+              const isSender =
+                msg.senderId?.toString() === authUser?._id?.toString();
+
+              return (
                 <div
-                  className={`chat-bubble relative ${
-                    msg.senderId === authUser._id //msg sender is us or authUser
-                      ? "bg-cyan-600 text-white"
-                      : "bg-slate-800 text-slate-200"
-                  }`}
+                  key={msg._id}
+                  className={`chat ${isSender ? "chat-end" : "chat-start"}`}
                 >
-                  {msg.image && (
-                    <img
-                      src={msg.image}
-                      alt="Shared"
-                      className="rounded-lg h-48 object-cover mb-2"
-                    />
-                  )}
+                  <div
+                    className={`chat-bubble relative ${
+                      isSender
+                        ? "bg-cyan-600 text-white"
+                        : "bg-slate-800 text-slate-200"
+                    }`}
+                  >
+                    {msg.image && (
+                      <img
+                        src={msg.image}
+                        alt="Shared"
+                        className="rounded-lg h-48 object-cover mb-2"
+                      />
+                    )}
 
-                  {msg.text && <p>{msg.text}</p>}
+                    {msg.text && <p>{msg.text}</p>}
 
-                  {/* Message timestamp */}
-                  <p className="text-xs mt-1 opacity-75 flex items-center gap-1">
-                    {new Date(msg.createdAt).toLocaleTimeString(undefined, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+                    {/* ⏰ timestamp */}
+                    <p className="text-xs mt-1 opacity-75">
+                      {new Date(msg.createdAt).toLocaleTimeString(undefined, {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
-            {/* Scroll target */}
+            {/* 🔽 scroll anchor */}
             <div ref={messageEndRef} />
           </div>
         ) : (
