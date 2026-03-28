@@ -18,7 +18,7 @@ export const initSocket = (app) => {
 
   io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_URL, // ✅ FIXED
+      origin: process.env.CLIENT_URL, //  FIXED
       credentials: true,
     },
   });
