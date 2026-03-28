@@ -18,9 +18,7 @@ export const useChatStore = create((set, get) => ({
 
   isSoundEnabled: true,
 
-  /* =========================
-     UI HELPERS
-     ========================= */
+  /* UI HELPERS */
   setSelectedUser: (user) => set({ selectedUser: user, messages: [] }),
   setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -31,7 +29,7 @@ export const useChatStore = create((set, get) => ({
      USERS / CONTACTS
      ========================= */
 
-  // 🔥 THIS WAS MISSING (CAUSE OF BLANK PAGE)
+  //  THIS WAS MISSING
   getAllContacts: async () => {
     set({ isUsersLoading: true });
     try {
@@ -93,7 +91,7 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
-        data
+        data,
       );
 
       // replace temp with real

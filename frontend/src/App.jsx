@@ -10,12 +10,12 @@ import { Toaster } from "react-hot-toast";
 function App() {
   const { checkAuth, isCheckingAuth, authUser, connectSocket } = useAuthStore();
 
-  // 🔥 1. auth hydration
+  //  1. auth hydration
   useEffect(() => {
     checkAuth();
   }, []);
 
-  // 🔥 2. socket connect ONLY after authUser ready
+  //  2. socket connect ONLY after authUser ready
   useEffect(() => {
     if (authUser) {
       connectSocket();
