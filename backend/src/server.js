@@ -15,7 +15,10 @@ const PORT = process.env.PORT || 3000;
 /* ================= CORS ================= */
 app.use(
   cors({
-    origin: process.env.CLIENT_URL, // frontend URL
+    origin: [
+      "http://localhost:3000",
+      "https://chate-fy-mern.vercel.app", // frontend
+    ],
     credentials: true,
   }),
 );
