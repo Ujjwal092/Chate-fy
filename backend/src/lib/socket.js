@@ -5,12 +5,12 @@ import { socketAuthMiddleware } from "../middleware/socket.auth.middleware.js";
 let io;
 let server;
 
-// 🔥 SINGLE SOURCE OF TRUTH
-const userSocketMap = {}; // { userId: socketId }
+//  use Map for better handling
+const userSocketMap = new Map();
 
-// helper for message controller
+// helper
 export const getReceiverSocketId = (receiverId) => {
-  return userSocketMap[receiverId];
+  return userSocketMap.get(receiverId);
 };
 
 export const initSocket = (app) => {
@@ -18,12 +18,12 @@ export const initSocket = (app) => {
 
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: process.env.CLIENT_URL, // ✅ FIXED
       credentials: true,
     },
   });
 
-  // 🔐 socket auth
+  //  auth middleware
   io.use(socketAuthMiddleware);
 
   io.on("connection", (socket) => {
@@ -37,17 +37,18 @@ export const initSocket = (app) => {
 
     console.log("✅ User connected:", socket.user.fullName);
 
-    // mark user online
-    userSocketMap[userId] = socket.id;
+    // store mapping
+    userSocketMap.set(userId, socket.id);
 
     // broadcast online users
-    io.emit("onlineUsers", Object.keys(userSocketMap));
+    io.emit("onlineUsers", Array.from(userSocketMap.keys()));
 
     socket.on("disconnect", () => {
       console.log("❌ User disconnected:", socket.user.fullName);
 
-      delete userSocketMap[userId];
-      io.emit("onlineUsers", Object.keys(userSocketMap));
+      userSocketMap.delete(userId);
+
+      io.emit("onlineUsers", Array.from(userSocketMap.keys()));
     });
   });
 

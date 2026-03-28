@@ -2,9 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import path from "path";
-import { fileURLToPath } from "url";
-
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
@@ -15,38 +12,36 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// cors
+/* ================= CORS ================= */
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || true,
+    origin: process.env.CLIENT_URL, // frontend URL
     credentials: true,
-  })
+  }),
 );
 
-app.options("*", cors());
-
-// body + cookies
+/* ================= MIDDLEWARE ================= */
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
-// DB
-connectDB();
+/* ================= ROUTES ================= */
+app.get("/", (req, res) => {
+  res.send("✅ API is running...");
+});
 
-// routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// frontend (optional)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const frontendPath = path.join(__dirname, "../../frontend/dist");
-
-app.use(express.static(frontendPath));
-app.get("*", (req, res) => res.sendFile(path.join(frontendPath, "index.html")));
-
-// SOCKET + SERVER START (SINGLE SOURCE)
+/* ================= SOCKET ================= */
 const server = initSocket(app);
 
-server.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-});
+/* ================= START SERVER ================= */
+connectDB()
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ DB connection failed:", err);
+  });

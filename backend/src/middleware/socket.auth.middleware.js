@@ -29,7 +29,7 @@ export const socketAuthMiddleware = async (socket, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 SUPPORT BOTH PAYLOAD STYLES
+    //  SUPPORT BOTH PAYLOAD STYLES
     // signup/login may use { id } or { userId }
     const userId = decoded.userId || decoded.id;
 
